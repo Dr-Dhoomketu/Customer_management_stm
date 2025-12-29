@@ -16,7 +16,6 @@
         "seed": "tsx prisma/seed.ts"
     },
     "dependencies": {
-        "@prisma/adapter-better-sqlite3": "^7.2.0",
         "@prisma/client": "^7.2.0",
         "@types/bcryptjs": "^2.4.6",
         "@types/jsonwebtoken": "^9.0.10",
@@ -25,7 +24,6 @@
         "@types/react-dom": "^19.0.3",
         "autoprefixer": "^10.4.20",
         "bcryptjs": "^3.0.3",
-        "better-sqlite3": "^12.5.0",
         "eslint": "^9.18.0",
         "eslint-config-next": "^15.1.4",
         "jsonwebtoken": "^9.0.3",
@@ -38,7 +36,6 @@
         "typescript": "^5.7.2"
     },
     "devDependencies": {
-        "@types/better-sqlite3": "^7.6.13",
         "dotenv": "^17.2.3",
         "tsx": "^4.21.0"
     }
