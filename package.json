@@ -17,6 +17,8 @@
     },
     "dependencies": {
         "@prisma/client": "^7.2.0",
+        "@prisma/adapter-pg": "^7.2.0",
+        "pg": "^8.13.1",
         "@types/bcryptjs": "^2.4.6",
         "@types/jsonwebtoken": "^9.0.10",
         "@types/node": "^22.10.5",
@@ -36,6 +38,7 @@
         "typescript": "^5.7.2"
     },
     "devDependencies": {
+        "@types/pg": "^8.11.10",
         "dotenv": "^17.2.3",
         "tsx": "^4.21.0"
     }
