@@ -1,5 +1,4 @@
-import 'dotenv/config';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Priority, TaskStatus } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -150,7 +149,7 @@ async function main() {
     });
 
     // 6. Create Institution Customers
-    const institutions = [];
+    const institutions: any[] = [];
     const institutionData = [
         {
             email: 'library@mit.edu',
@@ -226,7 +225,7 @@ async function main() {
     }
 
     // 7. Create Individual Customers
-    const individuals = [];
+    const individuals: any[] = [];
     const individualData = [
         { email: 'researcher1@email.com', name: 'Dr. Alice Brown', country: 'United States' },
         { email: 'researcher2@email.com', name: 'Dr. Robert Miller', country: 'Canada' },
@@ -256,7 +255,7 @@ async function main() {
 
     // 8. Create Journals
     console.log('📰 Creating journals...');
-    const journals = [];
+    const journals: any[] = [];
     const journalData = [
         {
             name: 'Nature Journal',
@@ -513,29 +512,29 @@ async function main() {
 
     // 11. Create Tasks
     console.log('✅ Creating tasks...');
-    const taskData = [
+    const taskData: any[] = [
         {
             title: 'Follow up with MIT Library renewal',
             description: 'Renewal due in 15 days. Need to confirm subscription continuation.',
             dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            priority: 'HIGH',
-            status: 'PENDING',
+            priority: Priority.HIGH,
+            status: TaskStatus.PENDING,
             userId: salesExec1.id,
         },
         {
             title: 'Send pricing proposal to Oxford University',
             description: 'They requested a quote for the full journal bundle.',
             dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-            priority: 'MEDIUM',
-            status: 'IN_PROGRESS',
+            priority: Priority.MEDIUM,
+            status: TaskStatus.IN_PROGRESS,
             userId: salesExec2.id,
         },
         {
             title: 'Process refund for cancelled subscription',
             description: 'Customer cancelled mid-term. Calculate prorated refund.',
             dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-            priority: 'URGENT',
-            status: 'PENDING',
+            priority: Priority.URGENT,
+            status: TaskStatus.PENDING,
             userId: financeAdmin.id,
         },
     ];
