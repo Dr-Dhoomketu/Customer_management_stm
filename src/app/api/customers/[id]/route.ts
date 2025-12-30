@@ -53,6 +53,11 @@ export async function GET(
             return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
         }
 
+        // 3. Authorization Check (for Sales Executives)
+        if (decoded.role === 'SALES_EXECUTIVE' && customer.assignedToUserId !== decoded.id) {
+            return NextResponse.json({ error: 'Forbidden: You are not assigned to this customer' }, { status: 403 });
+        }
+
         return NextResponse.json(customer);
 
     } catch (error) {

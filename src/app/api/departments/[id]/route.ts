@@ -4,9 +4,10 @@ import { getAuthenticatedUser } from '@/lib/auth';
 
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const decoded = await getAuthenticatedUser();
         if (!decoded || !['SUPER_ADMIN', 'ADMIN'].includes(decoded.role)) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
@@ -16,7 +17,7 @@ export async function PATCH(
         const { name, code, description, headUserId, isActive, parentDepartmentId } = body;
 
         const department = await prisma.department.update({
-            where: { id: params.id },
+            where: { id },
             data: {
                 ...(name && { name }),
                 ...(code !== undefined && { code }),
@@ -47,7 +48,7 @@ export async function PATCH(
                 userId: decoded.id,
                 action: 'update',
                 entity: 'department',
-                entityId: params.id,
+                entityId: id,
                 changes: JSON.stringify(body)
             }
         });
@@ -61,9 +62,10 @@ export async function PATCH(
 
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const decoded = await getAuthenticatedUser();
         if (!decoded || decoded.role !== 'SUPER_ADMIN') {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
@@ -71,7 +73,7 @@ export async function DELETE(
 
         // Check if department has users
         const department = await prisma.department.findUnique({
-            where: { id: params.id },
+            where: { id },
             include: {
                 _count: {
                     select: {
@@ -99,7 +101,7 @@ export async function DELETE(
         }
 
         await prisma.department.delete({
-            where: { id: params.id }
+            where: { id }
         });
 
         // Audit log
@@ -108,7 +110,7 @@ export async function DELETE(
                 userId: decoded.id,
                 action: 'delete',
                 entity: 'department',
-                entityId: params.id,
+                entityId: id,
                 changes: JSON.stringify({ name: department.name })
             }
         });

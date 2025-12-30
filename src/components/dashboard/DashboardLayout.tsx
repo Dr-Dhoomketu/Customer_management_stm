@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { registerPush } from '@/lib/push-register';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -17,6 +18,7 @@ export default function DashboardLayout({ children, userRole = 'CUSTOMER' }: Das
 
     useEffect(() => {
         fetchNotifications();
+        registerPush();
         // Polling for notifications every 30 seconds
         const interval = setInterval(fetchNotifications, 30000);
         return () => clearInterval(interval);

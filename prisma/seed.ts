@@ -1,14 +1,9 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import bcrypt from 'bcryptjs';
-import path from 'path';
-
-const dbPath = path.join(process.cwd(), 'prisma', 'dev.db');
-const adapter = new PrismaBetterSqlite3({ url: dbPath });
 
 const prisma = new PrismaClient({
-    adapter,
+    accelerateUrl: process.env.DATABASE_URL,
 });
 
 async function main() {
@@ -16,8 +11,14 @@ async function main() {
 
     // Clear existing data
     console.log('🗑️  Clearing existing data...');
+    await prisma.notification.deleteMany();
+    await prisma.pushSubscription.deleteMany();
     await prisma.auditLog.deleteMany();
+    await prisma.supportTicket.deleteMany();
     await prisma.task.deleteMany();
+    await prisma.chatMessage.deleteMany();
+    await prisma.chatParticipant.deleteMany();
+    await prisma.chatRoom.deleteMany();
     await prisma.communicationLog.deleteMany();
     await prisma.payment.deleteMany();
     await prisma.invoice.deleteMany();
@@ -29,6 +30,8 @@ async function main() {
     await prisma.institutionDetails.deleteMany();
     await prisma.customerProfile.deleteMany();
     await prisma.user.deleteMany();
+    await (prisma as any).department.deleteMany();
+    await (prisma as any).company.deleteMany();
 
     // Hash password for all users
     const hashedPassword = await bcrypt.hash('password123', 12);
@@ -286,7 +289,7 @@ async function main() {
     ];
 
     for (const inst of institutionData) {
-        const institution = await (prisma.user as any).create({
+        const institution: any = await (prisma.user as any).create({
             data: {
                 email: inst.email,
                 password: hashedPassword,
@@ -304,6 +307,7 @@ async function main() {
                         country: inst.country,
                         city: inst.city,
                         billingAddress: `${inst.orgName}, ${inst.city}`,
+                        assignedToUserId: institutions.length % 2 === 0 ? salesExec1.id : salesExec2.id,
                         institutionDetails: {
                             create: {
                                 category: inst.category,
@@ -327,7 +331,7 @@ async function main() {
     ];
 
     for (const ind of individualData) {
-        const individual = await (prisma.user as any).create({
+        const individual: any = await (prisma.user as any).create({
             data: {
                 email: ind.email,
                 password: hashedPassword,
@@ -342,6 +346,7 @@ async function main() {
                         primaryPhone: `+1-555-${2000 + individuals.length}`,
                         companyId: company.id,
                         country: ind.country,
+                        assignedToUserId: individuals.length % 2 === 0 ? salesExec1.id : salesExec2.id,
                     },
                 },
             },

@@ -7,7 +7,13 @@ export async function GET(req: NextRequest) {
         const decoded = await getAuthenticatedUser();
         if (!decoded) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-        const notifications = await (prisma as any).notification.findMany({
+        const notificationModel = (prisma as any).notification || (prisma as any).Notification;
+        if (!notificationModel) {
+            console.error('Prisma Notification model not found');
+            return NextResponse.json({ error: 'System configuration error' }, { status: 500 });
+        }
+
+        const notifications = await notificationModel.findMany({
             where: { userId: decoded.id },
             orderBy: { createdAt: 'desc' },
             take: 50
@@ -25,8 +31,11 @@ export async function PATCH(req: NextRequest) {
         const decoded = await getAuthenticatedUser();
         if (!decoded) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+        const notificationModel = (prisma as any).notification || (prisma as any).Notification;
+        if (!notificationModel) throw new Error('Notification model not found');
+
         // Mark all as read
-        await (prisma as any).notification.updateMany({
+        await notificationModel.updateMany({
             where: { userId: decoded.id, isRead: false },
             data: { isRead: true }
         });

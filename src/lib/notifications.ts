@@ -1,4 +1,18 @@
 import { prisma } from './prisma';
+import webpush from 'web-push';
+
+const vapidKeys = {
+    publicKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+    privateKey: process.env.VAPID_PRIVATE_KEY!,
+};
+
+if (vapidKeys.publicKey && vapidKeys.privateKey) {
+    webpush.setVapidDetails(
+        'mailto:admin@stm.com',
+        vapidKeys.publicKey,
+        vapidKeys.privateKey
+    );
+}
 
 export async function createNotification({
     userId,
@@ -14,7 +28,7 @@ export async function createNotification({
     link?: string | null;
 }) {
     try {
-        return await (prisma as any).notification.create({
+        const notification = await (prisma as any).notification.create({
             data: {
                 userId,
                 title,
@@ -23,15 +37,66 @@ export async function createNotification({
                 link
             }
         });
+
+        // Try to send push notification
+        await sendPushNotification(userId, title, message, link);
+
+        return notification;
     } catch (error) {
         console.error('Failed to create notification:', error);
+    }
+}
+
+async function sendPushNotification(userId: string, title: string, body: string, link: string | null) {
+    try {
+        const subscriptions = await (prisma as any).pushSubscription.findMany({
+            where: { userId }
+        });
+
+        if (subscriptions.length === 0) return;
+
+        const payload = JSON.stringify({
+            title,
+            body,
+            icon: '/icon-192x192.png',
+            data: { url: link || '/dashboard' }
+        });
+
+        const results = await Promise.allSettled(
+            subscriptions.map((sub: any) =>
+                webpush.sendNotification(
+                    {
+                        endpoint: sub.endpoint,
+                        keys: {
+                            p256dh: sub.p256dh,
+                            auth: sub.auth
+                        }
+                    },
+                    payload
+                )
+            )
+        );
+
+        // Remove failed subscriptions
+        for (let i = 0; i < results.length; i++) {
+            const result = results[i];
+            if (result.status === 'rejected') {
+                const sub = subscriptions[i];
+                if ((result.reason as any).statusCode === 410 || (result.reason as any).statusCode === 404) {
+                    await (prisma as any).pushSubscription.delete({
+                        where: { id: sub.id }
+                    });
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Push notification error:', error);
     }
 }
 
 export async function notifySupportTeam(companyId: string | null, title: string, message: string, link: string) {
     if (!companyId) return;
 
-    // Find all staff who should receive notifications (Admin, Manager, TL, Sales Exec)
     const staff = await prisma.user.findMany({
         where: {
             companyId,
