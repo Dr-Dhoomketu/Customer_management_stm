@@ -7,7 +7,7 @@
     },
     "scripts": {
         "dev": "next dev",
-        "build": "prisma generate && next build",
+        "build": "DATABASE_URL=${DATABASE_URL:-postgresql://unauthenticated@localhost:5432/placeholder} prisma generate && next build",
         "start": "next start",
         "lint": "next lint",
         "prisma:generate": "prisma generate",
