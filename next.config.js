@@ -17,10 +17,6 @@ const nextConfig = {
     generateBuildId: async () => {
         return 'stm-build-' + Date.now()
     },
-    // Disable static optimization for API routes
-    experimental: {
-        isrMemoryCacheSize: 0,
-    },
     // Skip pre-rendering API routes
     async rewrites() {
         return []
