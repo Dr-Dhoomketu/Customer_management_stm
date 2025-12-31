@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAuthenticatedUser } from '@/lib/auth';
 import { ChatRoom, ChatParticipant, ChatMessage, User } from '@prisma/client';
-import { AuthenticatedUser } from '@/types/auth';
+import { AuthenticatedUser } from '@/types/auth-types';
 
 type ChatRoomWithParticipants = ChatRoom & {
   participants: (ChatParticipant & {
