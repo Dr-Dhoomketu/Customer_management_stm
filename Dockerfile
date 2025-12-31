@@ -22,7 +22,7 @@ ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 
 # Force clean Prisma generation
 RUN rm -rf node_modules/.prisma
-RUN npx prisma generate --force-color
+RUN npx prisma generate
 
 # Build the application
 RUN SKIP_ENV_VALIDATION=1 npm run build
