@@ -1,6 +1,9 @@
 # Use Debian-based Node (Prisma compatible)
 FROM node:22-slim AS base
 
+RUN apt-get update -y && apt-get install -y openssl
+
+
 # Install dependencies
 FROM base AS deps
 WORKDIR /app
