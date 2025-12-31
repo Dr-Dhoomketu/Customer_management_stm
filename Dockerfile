@@ -20,7 +20,7 @@ COPY . .
 RUN npx prisma generate
 
 # Build the application
-RUN npm run build
+RUN SKIP_ENV_VALIDATION=1 npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner

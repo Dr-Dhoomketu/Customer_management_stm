@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import { getAuthenticatedUser } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
     try {
+        // Skip database operations during build time
+        if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+            return NextResponse.json({ error: 'Database not available during build' }, { status: 503 });
+        }
+
+        // Dynamic import to avoid build-time issues
+        const { prisma } = await import('@/lib/prisma');
+
         // 1. Verify Authentication
         const decoded = await getAuthenticatedUser();
         if (!decoded || !['SUPER_ADMIN', 'MANAGER'].includes(decoded.role)) {
