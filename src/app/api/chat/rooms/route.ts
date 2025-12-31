@@ -1,13 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAuthenticatedUser } from '@/lib/auth';
+import { ChatRoom, ChatParticipant, ChatMessage, User } from '@prisma/client';
+import { AuthenticatedUser } from '@/types/auth';
+
+type ChatRoomWithParticipants = ChatRoom & {
+  participants: (ChatParticipant & {
+    user: Pick<User, 'id' | 'email' | 'role'>;
+  })[];
+  messages?: ChatMessage[];
+};
 
 export async function GET(req: NextRequest) {
     try {
         const decoded = await getAuthenticatedUser();
         if (!decoded) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-        const rooms = await (prisma as any).chatRoom.findMany({
+        const rooms: ChatRoomWithParticipants[] = await prisma.chatRoom.findMany({
             where: {
                 participants: {
                     some: { userId: decoded.id }
@@ -30,7 +39,7 @@ export async function GET(req: NextRequest) {
         });
 
         return NextResponse.json(rooms);
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Chat Rooms GET Error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
@@ -46,20 +55,20 @@ export async function POST(req: NextRequest) {
 
         if (roomId) {
             // Join existing room
-            const room = await (prisma as any).chatRoom.findUnique({
+            const room = await prisma.chatRoom.findUnique({
                 where: { id: roomId }
             });
             if (!room) return NextResponse.json({ error: 'Room not found' }, { status: 404 });
 
             // Add participants
-            const existingParticipants = await (prisma as any).chatParticipant.findMany({
+            const existingParticipants = await prisma.chatParticipant.findMany({
                 where: { roomId }
             });
-            const existingUserIds = existingParticipants.map((p: any) => p.userId);
+            const existingUserIds = existingParticipants.map((p) => p.userId);
             const newUserIds = participantIds.filter((id: string) => !existingUserIds.includes(id));
 
             if (newUserIds.length > 0) {
-                await (prisma as any).chatRoom.update({
+                await prisma.chatRoom.update({
                     where: { id: roomId },
                     data: {
                         participants: {
@@ -80,7 +89,7 @@ export async function POST(req: NextRequest) {
 
         // If not group, check if a 1:1 room already exists
         if (!isGroup && uniqueParticipants.length === 2) {
-            const existingRoom = await (prisma as any).chatRoom.findFirst({
+            const existingRoom = await prisma.chatRoom.findFirst({
                 where: {
                     isGroup: false,
                     AND: [
@@ -93,11 +102,11 @@ export async function POST(req: NextRequest) {
             if (existingRoom) return NextResponse.json(existingRoom);
         }
 
-        const room = await (prisma as any).chatRoom.create({
+        const room: ChatRoomWithParticipants = await prisma.chatRoom.create({
             data: {
                 name: name || null,
                 isGroup: !!isGroup,
-                companyId: (decoded as any).companyId || null,
+                companyId: decoded.companyId || null,
                 participants: {
                     create: uniqueParticipants.map(userId => ({
                         userId
@@ -116,7 +125,7 @@ export async function POST(req: NextRequest) {
         });
 
         return NextResponse.json(room);
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Chat Rooms POST Error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }

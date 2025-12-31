@@ -10,13 +10,17 @@
         "build": "npx prisma generate && next build",
         "start": "next start",
         "lint": "next lint",
+        "type-check": "tsc --noEmit",
         "prisma:generate": "prisma generate",
         "prisma:push": "prisma db push",
         "prisma:studio": "prisma studio",
         "prisma:migrate": "prisma migrate deploy",
+        "prisma:reset": "prisma migrate reset",
         "seed": "tsx prisma/seed.ts",
         "seed:production": "tsx prisma/seed-production.ts",
-        "deploy": "./scripts/deploy.sh"
+        "deploy": "./scripts/deploy.sh",
+        "docker:build": "docker build -t stm-customer .",
+        "docker:run": "docker run -p 3000:3000 stm-customer"
     },
     "prisma": {
         "seed": "tsx prisma/seed.ts"
@@ -45,6 +49,7 @@
         "web-push": "^3.6.7"
     },
     "devDependencies": {
+        "@types/curl": "^0.1.2",
         "dotenv": "^17.2.3",
         "tsx": "^4.21.0"
     }

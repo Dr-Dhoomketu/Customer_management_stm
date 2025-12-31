@@ -11,7 +11,7 @@ async function main() {
 
     // Check if we already have data
     const userCount = await prisma.user.count();
-    const companyCount = await (prisma as any).company.count();
+    const companyCount = await prisma.company.count();
 
     if (userCount > 0 || companyCount > 0) {
         console.log('📊 Existing data found:');
@@ -29,7 +29,7 @@ async function main() {
 
     // Create Company
     console.log('🏢 Creating company...');
-    const company = await (prisma as any).company.create({
+    const company = await prisma.company.create({
         data: {
             name: 'STM Journals Inc',
             domain: 'stm.com',
@@ -42,7 +42,7 @@ async function main() {
 
     // Create Super Admin
     console.log('👤 Creating super admin...');
-    const superAdmin = await (prisma.user as any).create({
+    const superAdmin = await prisma.user.create({
         data: {
             email: 'admin@stm.com',
             password: hashedPassword,
@@ -57,7 +57,7 @@ async function main() {
                     primaryPhone: '+1-555-0001',
                     companyId: company.id,
                     country: 'United States',
-                } as any,
+                },
             },
         },
     });
@@ -120,7 +120,7 @@ async function main() {
     console.log('✅ Production seed completed successfully!');
     console.log('\n📊 Summary:');
     console.log(`- Users: ${await prisma.user.count()}`);
-    console.log(`- Companies: ${await (prisma as any).company.count()}`);
+    console.log(`- Companies: ${await prisma.company.count()}`);
     console.log(`- Journals: ${await prisma.journal.count()}`);
     console.log(`- Plans: ${await prisma.plan.count()}`);
 

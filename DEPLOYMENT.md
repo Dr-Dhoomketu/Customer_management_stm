@@ -45,17 +45,18 @@ git push origin main
 3. **Environment Variables**:
    Add these in the application settings:
    ```env
-   DATABASE_URL=postgresql://stm_user:YOUR_PASSWORD@stm-postgres:5432/stm_customer?schema=public
-   JWT_SECRET=your-super-secure-jwt-secret-minimum-32-characters
-   NEXT_PUBLIC_APP_URL=https://yourdomain.com
+   DATABASE_URL=postgresql://[username]:[password]@[postgres-service]:5432/[database]?schema=public
+   JWT_SECRET=[your-secure-jwt-secret-minimum-32-characters]
+   NEXT_PUBLIC_APP_URL=https://[your-domain.com]
    NODE_ENV=production
    SEED_DATABASE=false
    ```
 
    **Important**: 
-   - Replace `YOUR_PASSWORD` with your PostgreSQL password
-   - Replace `yourdomain.com` with your actual domain
+   - Replace all bracketed placeholders with your actual values
+   - Use the exact PostgreSQL service name from Coolify
    - Generate a strong JWT secret (32+ characters)
+   - Use your actual domain name
 
 ### 5. Configure Domain
 
@@ -88,9 +89,9 @@ If you need to add sample data to a fresh database:
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@host:5432/db` |
-| `JWT_SECRET` | Secret for JWT tokens (32+ chars) | `your-super-secure-secret-key-here` |
-| `NEXT_PUBLIC_APP_URL` | Your application URL | `https://yourdomain.com` |
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://[user]:[pass]@[host]:5432/[db]` |
+| `JWT_SECRET` | Secret for JWT tokens (32+ chars) | `[your-secure-secret-key-32-chars-min]` |
+| `NEXT_PUBLIC_APP_URL` | Your application URL | `https://[your-domain.com]` |
 | `NODE_ENV` | Environment mode | `production` |
 | `SEED_DATABASE` | Whether to seed on deploy | `false` (to preserve data) |
 

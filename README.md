@@ -1,62 +1,44 @@
 # STM Customer Management System
 
-A comprehensive web application for managing journal subscriptions, customers, sales channels, and analytics.
+A comprehensive Enterprise Resource Planning (ERP) system designed for STM Journal Solutions, built with Next.js 15, TypeScript, Prisma, and PostgreSQL.
 
 ## 🚀 Features
 
-### Phase 1 (MVP) - Currently Implemented
+### Core Functionality
+- **Multi-tenant Architecture** - Support for multiple companies
+- **Role-based Access Control** - 8 distinct user roles with granular permissions
+- **Customer Management** - Individual, Institution, and Agency customer types
+- **Subscription Management** - Flexible journal subscription plans
+- **Invoice & Payment Tracking** - Complete financial management
+- **Communication Logging** - Track all customer interactions
+- **Task Management** - Built-in task and project management
+- **Real-time Chat** - Internal team communication
+- **Support Ticketing** - Customer support system
+- **Analytics Dashboard** - Business intelligence and reporting
 
-- ✅ **User Authentication & Authorization**
-  - Registration with customer type selection (Individual/Institution/Agency)
-  - JWT-based authentication
-  - Role-Based Access Control (RBAC)
-  
-- ✅ **Customer Management**
-  - Self-registration and profile management
-  - Support for Individuals, Institutions, and Agencies
-  - Customer profile updates
-  
-- ✅ **Database Schema**
-  - Complete Prisma schema covering all entities
-  - User, CustomerProfile, Journal, Subscription, Invoice, Payment
-  - Communication logs, Tasks, and Audit trails
-  
-- ✅ **Dashboard**
-  - Role-based navigation
-  - Statistics overview
-  - Recent activity feed
-  - Upcoming renewals tracking
+### Technical Features
+- **Modern Stack** - Next.js 15, TypeScript, Prisma ORM
+- **Database** - PostgreSQL with comprehensive schema
+- **Authentication** - JWT-based with secure password hashing
+- **Docker Ready** - Multi-stage Docker builds with health checks
+- **Production Ready** - Optimized for deployment on Coolify
+- **Type Safety** - Full TypeScript implementation
+- **Security** - Comprehensive security measures and audit logging
 
-### Upcoming Features (Phase 2 & 3)
+## 📋 Prerequisites
 
-- 📋 Subscription lifecycle management
-- 📰 Journal catalog management
-- 💳 Invoice and payment processing
-- 📊 Advanced analytics and reporting
-- 📧 Email templates and automated reminders
-- 🤝 Agency commission management
-- 🔔 Renewal reminder system
+- Node.js 22.12.0 or higher
+- PostgreSQL 15+
+- Docker (optional, for containerized deployment)
 
-## 🛠️ Tech Stack
+## 🛠️ Installation
 
-- **Frontend**: Next.js 14 (React), TypeScript, Tailwind CSS
-- **Backend**: Next.js API Routes
-- **Database**: PostgreSQL with Prisma ORM
-- **Authentication**: JWT with bcrypt password hashing
-- **Styling**: Tailwind CSS with custom design system
+### Local Development
 
-## 📦 Installation
-
-### Prerequisites
-
-- Node.js 18+ and npm
-- PostgreSQL 14+
-
-### Setup Steps
-
-1. **Clone and navigate to the project**
+1. **Clone the repository**
    ```bash
-   cd /home/itb-09/Desktop/architecture/stmCustomer
+   git clone <your-repo-url>
+   cd stm-customer-management
    ```
 
 2. **Install dependencies**
@@ -64,174 +46,191 @@ A comprehensive web application for managing journal subscriptions, customers, s
    npm install
    ```
 
-3. **Set up PostgreSQL database**
+3. **Set up environment variables**
    ```bash
-   # Create a PostgreSQL database named 'stm_customer'
-   createdb stm_customer
-   ```
-
-4. **Configure environment variables**
-   ```bash
-   # Copy the example env file
    cp .env.example .env
-   
-   # Edit .env and update DATABASE_URL with your PostgreSQL credentials
-   # Format: postgresql://username:password@localhost:5432/stm_customer
+   # Edit .env with your database credentials
    ```
 
-5. **Generate Prisma client and push schema to database**
+4. **Set up the database**
    ```bash
-   npx prisma generate
-   npx prisma db push
+   # Start PostgreSQL (if using Docker)
+   docker run --name postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:15
+
+   # Run migrations
+   npx prisma migrate deploy
+
+   # Seed the database
+   npm run seed:production
    ```
 
-6. **Run the development server**
+5. **Start the development server**
    ```bash
    npm run dev
    ```
 
-7. **Open your browser**
-   Navigate to `http://localhost:3000`
+6. **Access the application**
+   - Application: http://localhost:3000
+   - Simple test page: http://localhost:3000/simple
+   - Health check: http://localhost:3000/api/health
 
-## 📊 Database Management
+### Docker Deployment
 
-### Prisma Commands
+1. **Using Docker Compose**
+   ```bash
+   docker-compose up -d
+   ```
 
+2. **Using Docker directly**
+   ```bash
+   docker build -t stm-customer .
+   docker run -p 3000:3000 -e DATABASE_URL="your-db-url" stm-customer
+   ```
+
+## 🚀 Production Deployment
+
+### Coolify Deployment
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed Coolify deployment instructions.
+
+### Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `DATABASE_URL` | PostgreSQL connection string | Yes |
+| `JWT_SECRET` | JWT signing secret (32+ chars) | Yes |
+| `NEXT_PUBLIC_APP_URL` | Application URL | Yes |
+| `NODE_ENV` | Environment (development/production) | Yes |
+| `SEED_DATABASE` | Whether to seed on deploy | No |
+
+## 🏗️ Architecture
+
+### Database Schema
+
+The system uses a comprehensive PostgreSQL schema with:
+- **Companies** - Multi-tenant support
+- **Users** - Role-based user management
+- **Customers** - Flexible customer profiles
+- **Journals & Plans** - Product catalog
+- **Subscriptions** - Subscription management
+- **Invoices & Payments** - Financial tracking
+- **Communications** - Interaction logging
+- **Tasks** - Task management
+- **Chat System** - Real-time messaging
+- **Support Tickets** - Customer support
+- **Audit Logs** - Complete audit trail
+
+### API Structure
+
+```
+/api
+├── /auth          # Authentication endpoints
+├── /users         # User management
+├── /customers     # Customer management
+├── /subscriptions # Subscription management
+├── /invoices      # Invoice management
+├── /analytics     # Business analytics
+├── /chat          # Chat system
+├── /support       # Support tickets
+├── /health        # Health checks
+└── /debug         # Debug information
+```
+
+## 🔐 Security
+
+### Implemented Security Features
+- JWT-based authentication with secure token handling
+- bcrypt password hashing (12 rounds)
+- Role-based access control (RBAC)
+- SQL injection protection via Prisma
+- Input validation and sanitization
+- Audit logging for all operations
+- Docker security best practices
+
+### Security Checklist
+- [ ] Change default admin password
+- [ ] Configure strong JWT secret
+- [ ] Enable HTTPS in production
+- [ ] Set up regular database backups
+- [ ] Configure monitoring and alerting
+
+See [SECURITY.md](./SECURITY.md) for comprehensive security guidelines.
+
+## 🧪 Testing
+
+### Health Checks
+- **Simple Page**: `/simple` - Basic functionality test
+- **Health API**: `/api/health` - Application and database health
+- **Debug API**: `/api/debug` - System information
+
+### Running Tests
 ```bash
-# Generate Prisma Client
-npm run prisma:generate
+# Run development server
+npm run dev
 
-# Push schema to database (development)
-npm run prisma:push
-
-# Open Prisma Studio (database GUI)
-npm run prisma:studio
-
-# Create and apply migrations (production)
-npx prisma migrate dev --name init
+# Check health endpoints
+curl http://localhost:3000/api/health
+curl http://localhost:3000/api/debug
 ```
 
-## 🔐 User Roles & Permissions
+## 🔧 Troubleshooting
 
-1. **CUSTOMER** - Manage own profile and subscriptions
-2. **AGENCY** - Manage clients and agency subscriptions
-3. **SALES_EXECUTIVE** - Manage assigned customers and create subscriptions
-4. **MANAGER** - Oversee team performance and analytics
-5. **FINANCE_ADMIN** - Manage invoices and payments
-6. **SUPER_ADMIN** - Full system access
+### Common Issues
 
-## 🎨 Design System
+1. **Black Screen / No Available Server**
+   - Check [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for step-by-step fixes
 
-The application features a premium design system with:
+2. **Database Connection Issues**
+   - Verify DATABASE_URL format
+   - Check PostgreSQL service status
+   - Ensure database credentials are correct
 
-- **Color Palette**: Primary (Blue), Success (Green), Warning (Yellow), Danger (Red)
-- **Typography**: Inter font family
-- **Components**: Reusable buttons, cards, forms, badges, tables
-- **Animations**: Fade-in, slide-in, and subtle pulse effects
-- **Responsive**: Mobile-first design approach
+3. **Build Failures**
+   - Check Node.js version (22.12.0+)
+   - Verify all environment variables are set
+   - Clear node_modules and reinstall
 
-## 📁 Project Structure
+### Debug Information
+- Visit `/api/debug` for system information
+- Check application logs for detailed error messages
+- Use `/simple` page to test basic functionality
 
-```
-stmCustomer/
-├── src/
-│   ├── app/
-│   │   ├── api/          # API routes
-│   │   ├── dashboard/    # Dashboard pages
-│   │   ├── login/        # Login page
-│   │   ├── register/     # Registration page
-│   │   ├── globals.css   # Global styles
-│   │   ├── layout.tsx    # Root layout
-│   │   └── page.tsx      # Landing page
-│   ├── components/
-│   │   ├── dashboard/    # Dashboard components
-│   │   └── ui/           # Reusable UI components
-│   ├── lib/
-│   │   ├── auth.ts       # Authentication utilities
-│   │   └── prisma.ts     # Prisma client
-│   └── types/
-│       └── index.ts      # TypeScript types
-├── prisma/
-│   └── schema.prisma     # Database schema
-├── public/               # Static assets
-├── .env.example          # Environment variables template
-├── next.config.js        # Next.js configuration
-├── tailwind.config.ts    # Tailwind configuration
-├── tsconfig.json         # TypeScript configuration
-└── package.json          # Dependencies
-```
+## 📊 Default Credentials
 
-## 🔧 Development
+After seeding the database:
+- **Email**: admin@stm.com
+- **Password**: password123
 
-### Available Scripts
-
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint         # Run ESLint
-```
-
-### Code Quality
-
-- **TypeScript**: Strict mode enabled for type safety
-- **ESLint**: Code linting and formatting
-- **Prisma**: Type-safe database access
-
-## 🌐 Environment Variables
-
-Create a `.env` file based on `.env.example`:
-
-```env
-DATABASE_URL="postgresql://user:password@localhost:5432/stm_customer?schema=public"
-JWT_SECRET="your-super-secret-jwt-key-change-in-production"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-NODE_ENV="development"
-```
-
-## 📖 API Endpoints
-
-### Authentication
-
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-
-### Coming Soon
-
-- Customer management endpoints
-- Subscription management endpoints
-- Journal catalog endpoints
-- Analytics endpoints
-
-## 🚧 Roadmap
-
-### Phase 1 (Current) ✅
-- User authentication
-- Customer registration
-- Basic dashboard
-- Database schema
-
-### Phase 2 (Next)
-- Subscription management
-- Journal catalog
-- Invoice/Payment system
-- Communication logging
-
-### Phase 3 (Future)
-- Advanced analytics
-- Email automation
-- Agency commission tracking
-- Report generation
+**⚠️ Important**: Change the admin password immediately after first login!
 
 ## 🤝 Contributing
 
-This is a private project. For questions or issues, contact the development team.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-## 📄 License
+## 📝 License
 
-Proprietary - All rights reserved
+This project is proprietary software for STM Journal Solutions.
+
+## 📞 Support
+
+For technical support:
+- Check [TROUBLESHOOTING.md](./TROUBLESHOOTING.md)
+- Review [SECURITY.md](./SECURITY.md) for security issues
+- Contact the development team
+
+## 🔄 Version History
+
+- **v0.1.0** - Initial release with core ERP functionality
+- Multi-tenant customer management
+- Subscription and billing system
+- Real-time chat and support tickets
+- Analytics dashboard
+- Docker deployment ready
 
 ---
 
-**Built with ❤️ using Next.js, TypeScript, and Tailwind CSS**
-# Customers-Management
+**Built with ❤️ for STM Journal Solutions**

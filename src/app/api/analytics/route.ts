@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { UserRole } from '@prisma/client';
 
 export async function GET(req: NextRequest) {
     try {
@@ -8,12 +10,9 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'Database not available during build' }, { status: 503 });
         }
 
-        // Dynamic import to avoid build-time issues
-        const { prisma } = await import('@/lib/prisma');
-
         // 1. Verify Authentication
         const decoded = await getAuthenticatedUser();
-        if (!decoded || !['SUPER_ADMIN', 'MANAGER'].includes(decoded.role)) {
+        if (!decoded || !(['SUPER_ADMIN', 'MANAGER'] as UserRole[]).includes(decoded.role)) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
@@ -34,7 +33,7 @@ export async function GET(req: NextRequest) {
             select: { amount: true, paymentDate: true }
         });
 
-        const revenueByMonth = payments.reduce((acc: any, p) => {
+        const revenueByMonth = payments.reduce((acc: Record<string, number>, p) => {
             const month = p.paymentDate.toLocaleString('default', { month: 'short', year: '2-digit' });
             acc[month] = (acc[month] || 0) + p.amount;
             return acc;
@@ -74,7 +73,7 @@ export async function GET(req: NextRequest) {
             channelSplit: channels.map(c => ({ name: c.salesChannel, value: c._count.id }))
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Analytics Error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
