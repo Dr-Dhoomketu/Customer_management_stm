@@ -2,8 +2,12 @@ import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
+const url = process.env.DATABASE_URL;
+const isAccelerated = url?.startsWith('prisma://') || url?.startsWith('prisma+postgres://');
+
 const prisma = new PrismaClient({
-    accelerateUrl: process.env.DATABASE_URL,
+    log: ['error'],
+    ...(isAccelerated ? { accelerateUrl: url } : {}),
 });
 
 async function main() {
