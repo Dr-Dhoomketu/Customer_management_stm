@@ -7,13 +7,16 @@
     },
     "scripts": {
         "dev": "next dev",
-        "build": "DATABASE_URL=${DATABASE_URL:-postgresql://unauthenticated@localhost:5432/placeholder} prisma generate && next build",
+        "build": "npx prisma generate && next build",
         "start": "next start",
         "lint": "next lint",
         "prisma:generate": "prisma generate",
         "prisma:push": "prisma db push",
         "prisma:studio": "prisma studio",
-        "seed": "tsx prisma/seed.ts"
+        "prisma:migrate": "prisma migrate deploy",
+        "seed": "tsx prisma/seed.ts",
+        "seed:production": "tsx prisma/seed-production.ts",
+        "deploy": "./scripts/deploy.sh"
     },
     "prisma": {
         "seed": "tsx prisma/seed.ts"
