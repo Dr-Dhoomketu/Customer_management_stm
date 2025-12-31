@@ -20,6 +20,7 @@ COPY . .
 RUN npx prisma generate
 
 # Build the application
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 RUN SKIP_ENV_VALIDATION=1 npm run build
 
 # Production image, copy all the files and run next
