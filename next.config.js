@@ -17,6 +17,10 @@ const nextConfig = {
     generateBuildId: async () => {
         return 'stm-build-' + Date.now()
     },
+    // Ensure CSS is properly handled
+    experimental: {
+        optimizeCss: true,
+    },
     // Skip pre-rendering API routes
     async rewrites() {
         return []
