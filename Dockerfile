@@ -8,7 +8,8 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN rm -f package-lock.json
+RUN npm install
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -21,7 +22,8 @@ ENV NODE_ENV=production
 ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 
 # Force clean Prisma generation
-RUN rm -rf node_modules/.prisma
+RUN rm -rf node_modules/.prisma node_modules/@prisma
+RUN npm install @prisma/client prisma
 RUN npx prisma generate
 
 # Build the application
