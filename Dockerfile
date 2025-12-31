@@ -16,11 +16,15 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma Client
+# Set build environment
+ENV NODE_ENV=production
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
+
+# Clean and regenerate Prisma Client
+RUN rm -rf node_modules/.prisma node_modules/@prisma/client
 RUN npx prisma generate
 
 # Build the application
-ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 RUN SKIP_ENV_VALIDATION=1 npm run build
 
 # Production image, copy all the files and run next
